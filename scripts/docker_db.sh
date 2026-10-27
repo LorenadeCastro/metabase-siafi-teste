@@ -16,11 +16,16 @@ psql_admin() { docker compose exec -T postgres psql -U postgres -v ON_ERROR_STOP
 psql_owner() { docker compose exec -T postgres psql -U siafi_owner -d "$SIAFI_DB" -v ON_ERROR_STOP=1 -q "$@"; }
 
 echo "1/6 criando usuarios e banco..."
-# Se ja existir (rodou antes), recomece do zero:  docker compose down -v
-psql_admin -v owner_pw="'$SIAFI_OWNER_PASSWORD'" -v ro_pw="'$METABASE_RO_PASSWORD'" -f - < sql/01_banco_e_usuarios.sql
+# Pode rodar de novo: se o banco ja existe, este passo e pulado.
+existe=$(psql_admin -Atc "SELECT 1 FROM pg_database WHERE datname='${SIAFI_DB}';")
+if [ "$existe" = "1" ]; then
+    echo "   banco ${SIAFI_DB} ja existe, pulando"
+else
+    psql_admin -v owner_pw="'$SIAFI_OWNER_PASSWORD'" -v ro_pw="'$METABASE_RO_PASSWORD'" -f - < sql/01_banco_e_usuarios.sql
+fi
 
 echo "2/6 criando schema..."
-psql_owner -c "CREATE SCHEMA siafi AUTHORIZATION siafi_owner;"
+psql_owner -c "CREATE SCHEMA IF NOT EXISTS siafi AUTHORIZATION siafi_owner;"
 
 echo "3/6 gerando e aplicando as tabelas a partir do datapackage.json..."
 python3 scripts/gen_ddl.py "$REPO/datapackage.json" > sql/02_tabelas.sql

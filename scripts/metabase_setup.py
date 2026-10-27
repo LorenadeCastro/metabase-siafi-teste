@@ -79,6 +79,10 @@ for nome in ["Analistas", "Leitores", "Gestores"]:
         grupos[nome] = g["id"]
 
 # ---------- 4) usuarios de teste (um por grupo) ----------
+# Versoes recentes do Metabase exigem que a lista de grupos inclua o "All Users"
+# (todo usuario pertence a ele); sem isso a API responde 400.
+todos = call("GET", "/permissions/group") or []
+id_all_users = next((x["id"] for x in todos if x["name"].lower() == "all users"), 1)
 for nome, email, grupo in [("Ana Analista", "analista@teste.local", "Analistas"),
                            ("Lia Leitora", "leitor@teste.local", "Leitores"),
                            ("Gil Gestor", "gestor@teste.local", "Gestores")]:
@@ -86,7 +90,10 @@ for nome, email, grupo in [("Ana Analista", "analista@teste.local", "Analistas")
         call("POST", "/user", json={
             "first_name": nome.split()[0], "last_name": nome.split()[1],
             "email": email, "password": "Teste-Senha-123",
-            "user_group_memberships": [{"id": grupos[grupo], "is_group_manager": False}],
+            "user_group_memberships": [
+                {"id": id_all_users, "is_group_manager": False},
+                {"id": grupos[grupo], "is_group_manager": False},
+            ],
         })
 
 # ---------- 5) colecoes ----------

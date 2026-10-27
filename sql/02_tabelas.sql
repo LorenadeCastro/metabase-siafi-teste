@@ -24,6 +24,7 @@ CREATE TABLE alteracoes_orcamentarias (
     modalidade_cod text,
     modalidade_desc text,
     iag_cod text,
+    iag_desc text,
     fonte_cod text NOT NULL,
     fonte_desc text,
     ipu_cod text,
@@ -33,7 +34,9 @@ CREATE TABLE alteracoes_orcamentarias (
     vlr_suplementacao numeric(18,2),
     vlr_anulacao numeric(18,2),
     vlr_credito_inicial numeric(18,2),
-    vlr_credito_autorizado numeric(18,2)
+    vlr_credito_autorizado numeric(18,2),
+    intra_saude boolean NOT NULL,
+    asps boolean NOT NULL
 );
 
 DROP TABLE IF EXISTS cota CASCADE;
@@ -51,6 +54,7 @@ CREATE TABLE cota (
     modalidade_cod text,
     modalidade_desc text,
     iag_cod text,
+    iag_desc text,
     fonte_cod text NOT NULL,
     fonte_desc text,
     ipu_cod text,
@@ -64,7 +68,8 @@ CREATE TABLE cota (
     vlr_cota_aprovada numeric(18,2),
     vlr_cota_cancelada numeric(18,2),
     vlr_cota_anulada numeric(18,2),
-    vlr_cota_aprovada_liquida numeric(18,2)
+    vlr_cota_aprovada_liquida numeric(18,2),
+    asps boolean NOT NULL
 );
 
 DROP TABLE IF EXISTS credito CASCADE;
@@ -86,13 +91,16 @@ CREATE TABLE credito (
     modalidade_cod text,
     modalidade_desc text,
     iag_cod text,
+    iag_desc text,
     fonte_cod text NOT NULL,
     fonte_desc text,
     ipu_cod text,
     ipu_desc text,
     vlr_credito_inicial numeric(18,2),
     vlr_credito_autorizado numeric(18,2),
-    vlr_cota_descentralizada numeric(18,2)
+    vlr_cota_descentralizada numeric(18,2),
+    intra_saude boolean NOT NULL,
+    asps boolean NOT NULL
 );
 
 DROP TABLE IF EXISTS execucao CASCADE;
@@ -105,6 +113,7 @@ CREATE TABLE execucao (
     ue_cod text,
     upg_cod text,
     uo_fin_cod text,
+    uo_fin_nome text,
     funcao_cod text,
     funcao_desc text,
     subfuncao_cod text,
@@ -118,6 +127,7 @@ CREATE TABLE execucao (
     modalidade_cod text,
     modalidade_desc text,
     iag_cod text,
+    iag_desc text,
     fonte_cod text NOT NULL,
     fonte_desc text,
     ipu_cod text,
@@ -129,6 +139,7 @@ CREATE TABLE execucao (
     num_processo_compra text,
     licitacao_modalidade text,
     cnpj_cpf_formatado text,
+    razao_social_credor text,
     num_contrato_saida text,
     num_contrato_entrada text,
     num_obra text,
@@ -137,7 +148,8 @@ CREATE TABLE execucao (
     vlr_liquidado numeric(18,2),
     vlr_liquidado_retido numeric(18,2),
     vlr_pago_orcamentario numeric(18,2),
-    vlr_pago_financeiro numeric(18,2)
+    vlr_pago_financeiro numeric(18,2),
+    asps boolean NOT NULL
 );
 
 DROP TABLE IF EXISTS execucao_alem_credito CASCADE;
@@ -158,6 +170,7 @@ CREATE TABLE execucao_alem_credito (
     modalidade_cod text,
     modalidade_desc text,
     iag_cod text,
+    iag_desc text,
     fonte_cod text NOT NULL,
     fonte_desc text,
     ipu_cod text,
@@ -166,7 +179,8 @@ CREATE TABLE execucao_alem_credito (
     elemento_item_desc text,
     vlr_alem_credito numeric(18,2),
     vlr_regularizado numeric(18,2),
-    vlr_anulado numeric(18,2)
+    vlr_anulado numeric(18,2),
+    asps boolean NOT NULL
 );
 
 DROP TABLE IF EXISTS receita CASCADE;
@@ -185,7 +199,24 @@ CREATE TABLE receita (
     vlr_previsto_adicional numeric(18,2),
     vlr_previsto_atualizado numeric(18,2),
     vlr_contabilizado numeric(18,2),
-    vlr_efetivado_ajustado numeric(18,2)
+    vlr_efetivado_ajustado numeric(18,2),
+    asps boolean NOT NULL,
+    ibs boolean NOT NULL,
+    ibs_acessorias boolean NOT NULL,
+    ibs_principal boolean NOT NULL,
+    icms boolean NOT NULL,
+    icms_acessorias boolean NOT NULL,
+    icms_principal boolean NOT NULL,
+    ipva boolean NOT NULL,
+    ipva_acessorias boolean NOT NULL,
+    ipva_principal boolean NOT NULL,
+    irrf boolean NOT NULL,
+    irrf_acessorias boolean NOT NULL,
+    irrf_principal boolean NOT NULL,
+    itcd boolean NOT NULL,
+    itcd_acessorias boolean NOT NULL,
+    itcd_principal boolean NOT NULL,
+    impostos boolean NOT NULL
 );
 
 DROP TABLE IF EXISTS restos_pagar CASCADE;
@@ -198,6 +229,7 @@ CREATE TABLE restos_pagar (
     uo_nome text,
     ue_cod text,
     uo_fin_cod text,
+    uo_fin_nome text,
     upg_cod text,
     funcao_cod text,
     funcao_desc text,
@@ -208,6 +240,7 @@ CREATE TABLE restos_pagar (
     modalidade_cod text,
     modalidade_desc text,
     iag_cod text,
+    iag_desc text,
     fonte_cod text NOT NULL,
     fonte_desc text,
     ipu_cod text,
@@ -241,7 +274,8 @@ CREATE TABLE restos_pagar (
     vlr_anulacao_pago_antecipado numeric(18,2),
     vlr_pago_antecipado_exercicio numeric(18,2),
     vlr_pago_rpnp numeric(18,2),
-    vlr_retencao_rpnp numeric(18,2)
+    vlr_retencao_rpnp numeric(18,2),
+    asps boolean NOT NULL
 );
 
 DROP TABLE IF EXISTS restos_pagar_folha CASCADE;
@@ -257,6 +291,7 @@ CREATE TABLE restos_pagar_folha (
     modalidade_cod text,
     modalidade_desc text,
     iag_cod text,
+    iag_desc text,
     fonte_cod text NOT NULL,
     fonte_desc text,
     ipu_cod text,
@@ -264,6 +299,8 @@ CREATE TABLE restos_pagar_folha (
     vlr_inscrito_folha numeric(18,2),
     vlr_anulado_folha numeric(18,2),
     vlr_pago_folha numeric(18,2),
-    vlr_despesa_liquidada_pagar_folha numeric(18,2)
+    vlr_despesa_liquidada_pagar_folha numeric(18,2),
+    intra_saude boolean NOT NULL,
+    asps boolean NOT NULL
 );
 
